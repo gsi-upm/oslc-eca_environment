@@ -1,111 +1,55 @@
 import requests
-import rdflib
-import time
-import json
+from rdflib import Graph, Namespace
+from rdflib.namespace import RDFS, RDF
 
-def fetchChanges(uri):
+TRS = Namespace('http://open-services.net/ns/core/trs#')
+LDP = Namespace('http://www.w3.org/ns/ldp#')
 
-    # The URI for the data you want to fetch
-    #uri = uri
+def initialize(trs_uri, credentials, store):
+    base_uri = get_uri_base(trs_uri, credentials)
 
-    # The content type you want to set in the Request Headers.
-    # This example is for RDF/XML
-    headers = {'Accept': 'application/rdf+xml'}
-
-    # Credentials
-    user = r'admin'
-    password = r'adminpass'
-
-    # Build the request with the URI and Header parameters
-    return requests.get(uri, auth=(user, password), headers=headers)
-
-
-def getChangeLog(response):
-
-    # Create an empty graph that we can load data into
-    graph = rdflib.Graph()
-
-    # Parse the fetched data into the graph and tell the code that the
-    graph.parse(data=response.content)
-
-    # SPARQL query
-    return graph.query("""
-
-                         select ?changed ?order
-
-                         where {
-                            ?s <http://open-services.net/ns/core/trs#changed> ?changed .
-                            ?s <http://open-services.net/ns/core/trs#order> ?order .
-                         }
-
-                         order by ?order
-
-                         """)
-
-
-def trigger_event(graph):
-    url = "http://localhost:5050/evaluate"
-    payload = {
-        "username": "usertest",
-        "event": """
-        @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-        @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-        @prefix ewe: <http://gsi.dit.upm.es/ontologies/ewe/ns/> .
-        @prefix string: <http://www.w3.org/2000/10/swap/string#> .
-
-        _:event rdfs:label "New OSLC resource created" ;
-            rdf:type ewe:ResourceCreated ;
-            rdf:type ewe:Event ;"""
-    }
-
-    for pred, obj in graph.predicate_objects():
-        print(pred, ": ", obj)
-        payload["event"] = payload["event"] + """
-            ewe:hasParameter [
-                rdf:type <{}> ;
-                rdf:value "{}" ;
-            ] ;""".format(pred, obj)
-        
-    payload["event"] = payload["event"] + """
-            rdfs:domain ewe:OSLC .
-    """
+    while base_uri:
+        base_uri = add_resources(base_uri, credentials, store)
     
-    print(payload["event"])
-    graph.parse(data=payload["event"], format='n3')
-    r = requests.post(url, data=payload)
-    print(r.text)
+    print(store.serialize(format='n3', indent=2).decode('ascii'))
+    return 1
 
 
-response = fetchChanges('http://localhost:8085/OSLC4JBugzilla/services/trs')
-previous = getChangeLog(response)
-max = int(list(previous)[-1][1])
+def get_uri_base(uri, credentials):
+    response = requests.get(uri, auth=credentials, headers={'Accept': 'application/rdf+xml'})
 
-print('Listening for changes\n')
+    graph = Graph()
+    graph.parse(data=response.content, format='xml')
 
-while True:
-    # print('Polling...\n')
+    for uri in graph.objects(None, TRS.base):
+        return uri.toPython()
 
-    time.sleep(2)
+    return ''
 
-    response = fetchChanges('http://localhost:8085/OSLC4JBugzilla/services/trs')
-    changes = getChangeLog(response)
 
-    if changes != previous:
-        previous = changes
+def add_resources(base_uri, credentials, store):
+    response = requests.get(base_uri, auth=credentials, headers={'Accept': 'application/rdf+xml'})
 
-        # For each results print the value
-        for row in changes:
-            if int(row[1]) > max:
-                max = int(row[1])
+    graph = Graph()
+    graph.parse(data=response.content, format='xml')
 
-                response = fetchChanges(row[0])
+    if (None, TRS.cutoffEvent, None) in graph:
+        for syncPoint in graph.triples((None, TRS.cutoffEvent, None)):
+            store.add(syncPoint)
 
-                graph = rdflib.Graph()
-                graph.parse(data=response.content)
+    for resource in graph.objects(None, RDFS.member):
+        response = requests.get(resource.toPython(), auth=credentials, headers={'Accept': 'application/rdf+xml'})
+        store.parse(data=response.text, format='xml')
+    
+    if (None, LDP.nextPage, RDF.nil) in graph:
+        return ''
 
-                data = graph.serialize(format='n3', indent=2)
-                print(row[0])
-                print('\n')
-                print(data.decode('ascii'))
+    for next_uri in graph.objects(None, LDP.nextPage):
+        return next_uri.toPython()
 
-                trigger_event(graph)
+    return ''
+
+
+def incremental_update(trs_uri, credentials, store):
+    
+    return 1

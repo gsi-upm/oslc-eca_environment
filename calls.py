@@ -62,6 +62,10 @@ def evaluate():
                 rdf:type <http://www.bugzilla.org/rdf#component> ;
                 rdf:value "TestComponent" ;
             ] ;
+            ewe:hasParameter [
+                rdf:type <http://www.bugzilla.org/rdf#severity> ;
+                rdf:value "Unclassified" ;
+            ] ;
             rdfs:domain ewe:OSLC .
     """
     }

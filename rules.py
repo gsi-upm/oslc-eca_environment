@@ -44,6 +44,11 @@ chain_rule = {
                                   "rdfs:label": "Query URI", 
                                   "rdf:type": "http://gsi.dit.upm.es/ontologies/ewe/ns/QueryURI",
                                   "rdf:value" : "http://localhost:5000/oslc/rm/requirement"
+                                },
+                                { "@id": "http://gsi.dit.upm.es/ontologies/ewe/ns/EventInput",
+                                  "rdfs:label": "Event Input", 
+                                  "rdf:type": "http://gsi.dit.upm.es/ontologies/ewe/ns/EventInput",
+                                  "rdf:value" : "true"
                                 }]                                
                   },
                   {"@id": "http://gsi.dit.upm.es/ontologies/ewe/ns/UpdateResource",
