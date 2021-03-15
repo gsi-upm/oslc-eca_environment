@@ -1,6 +1,8 @@
 import requests
+import time
 from rdflib import Graph, Namespace, BNode, URIRef
 from rdflib.namespace import RDFS, RDF
+from interfaces.ewe import evaluate
 
 TRS = Namespace('http://open-services.net/ns/core/trs#')
 LDP = Namespace('http://www.w3.org/ns/ldp#')
@@ -11,7 +13,6 @@ def initialize(trs_uri, credentials, store):
     while base_uri:
         base_uri = add_resources(base_uri, credentials, store)
     
-    # print(store.serialize(format='n3', indent=2).decode('ascii'))
     return 1
 
 
@@ -37,8 +38,9 @@ def add_resources(base_uri, credentials, store):
         for sync_point in graph.triples((None, TRS.cutoffEvent, None)):
             store.add(sync_point)
 
-    for resource in graph.objects(None, RDFS.member):
+    for resource in graph.objects(None, LDP.member): # WTF: en el adaptador de bugzilla es RDFS.member
         response = requests.get(resource.toPython(), auth=credentials, headers={'Accept': 'application/rdf+xml'})
+        print(response.content.decode('ascii'))
         store.parse(data=response.content, format='xml')
         store.add((URIRef('_:resourceSet'), URIRef('_:hasResource'), resource))
     
@@ -58,17 +60,17 @@ def incremental_update(trs_uri, credentials, store):
         change_log_uri = find_sync_point(change_log_uri, credentials, store, change_log)
     
     apply_resource_changes(trs_uri, credentials, store, change_log)
-    print(store.serialize(format='n3', indent=2).decode('ascii'))
-    
+
     return 1
 
 
 def find_sync_point(uri, credentials, store, change_log):
-    response = requests.get(uri, auth=credentials, headers={'Accept': 'application/rdf+xml'})
+    response = requests.get(uri, auth=credentials, headers={'Accept': 'text/turtle'})
 
     graph = Graph()
-    graph.parse(data=response.content, format='xml')
+    graph.parse(data=response.content, format='turtle')
 
+    # TODO: use Resource from rdflib
     query = graph.query("""
         PREFIX trs: <http://open-services.net/ns/core/trs#>
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -102,21 +104,39 @@ def find_sync_point(uri, credentials, store, change_log):
 def apply_resource_changes(uri, credentials, store, change_log):
     for event in change_log:
         if event["action"] == TRS.Creation:
-            print("Creating")
-            response = requests.get(event["resource"].toPython(), auth=credentials, headers={'Accept': 'application/rdf+xml'})
-            store.parse(data=response.content, format='xml')
+            print("Creating:")
+            response = requests.get(str(event["resource"]), auth=credentials, headers={'Accept': 'text/turtle'})
+            print(response.content.decode('ascii'))
+            store.parse(data=response.content, format='turtle')
+
+            # Send event to EWE Tasker
+            evaluate(event['action'], store.triples((event["resource"], None, None)))
+
             store.add((URIRef('_:resourceSet'), URIRef('_:hasResource'), event["resource"]))
 
+            
         elif event["action"] == TRS.Modification:
-            print("Updating")
+            print("Updating:")
             store.remove((event["resource"], None, None))
-            response = requests.get(event["resource"].toPython(), auth=credentials, headers={'Accept': 'application/rdf+xml'})
-            store.parse(data=response.content, format='xml')
+            response = requests.get(str(event["resource"]), auth=credentials, headers={'Accept': 'text/turtle'})
+            print(response.content.decode('ascii'))
+            store.parse(data=response.content, format='turtle')
+
+            # Send event to EWE Tasker
+            evaluate(event['action'], store.triples((event["resource"], None, None)))
+
             store.add((URIRef('_:resourceSet'), URIRef('_:hasResource'), event["resource"]))
+
 
         elif event["action"] == TRS.Deletion:
-            print("Deleting")
+            print("Deleting:")
+            print(event["resource"])
+
+            # Send event to EWE Tasker
+            evaluate(event['action'], store.triples((event["resource"], None, None)))
+
             store.remove((event["resource"], None, None))
+
 
         else:
             continue
@@ -127,13 +147,21 @@ def apply_resource_changes(uri, credentials, store, change_log):
     return
 
 
-def main():
-    uri = 'http://localhost:8085/OSLC4JBugzilla/services/trs'
-    credentials = ('admin', 'adminpass')
+if __name__ == "__main__":
+
+    # TODO: env variables
+    # uri = 'http://localhost:8085/OSLC4JBugzilla/services/trs'
+    # credentials = ('admin', 'adminpass')
+    uri = 'http://localhost:5000/service/trackedResourceSet'
+    credentials = ('', '')
     store = Graph()
 
-    print('\nINITIALIZATION\n')
+    print("\nInitializing...\n")
     initialize(uri, credentials, store)
 
-    print('\nINCREMENTAL UPDATE\n')
-    incremental_update(uri, credentials, store)
+    print("\nStarting Incremental Update\n")
+    while True:
+        incremental_update(uri, credentials, store)
+        time.sleep(5)
+
+    # print(store.serialize(format='n3', indent=2).decode('ascii'))

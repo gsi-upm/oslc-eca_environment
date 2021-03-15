@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Bugzilla",
+        "url": "http://localhost:8085/OSLC4JBugzilla/services/trs",
+        "user": "admin",
+        "password": "adminpass"
+    },
+    {
+        "name": "GitHub",
+        "url": "http://localhost:5000/service/trs",
+        "user": "",
+        "password": ""
+    }
+]
