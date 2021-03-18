@@ -1,0 +1,91 @@
+@prefix roi: <http://gsi.upm.es/ontologies/roi> .
+
+@prefix oslc: <http://open-services.net/ns/core#> .
+@prefix trs: <http://open-services.net/ns/core/trs#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ewe: <http://gsi.dit.upm.es/ontologies/ewe/ns/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ewe-service: <http://gsi.dit.upm.es/ontologies/ewe-service/ns/> .
+@prefix dbo: <http://dbpedia.org/ontology/> .
+@base  <http://gsi.dit.upm.es/ontologies/ewe/ns/> .
+
+
+###################################
+# Channel definition
+###################################
+roi:OSLCServer a owl:Class ;
+    rdfs:label "OSLC server" ;
+    rdfs:comment "This channel represents an OSLC server with its corresponding CRUD functions." ;
+    foaf:logo "fa fa-connectdevelop" ;
+    dbo:colour dbo:Blue ;
+    roi:usesTracker trs:TrackedResourceSet ;
+    roi:usesProvider oslc:ServiceProvider ;
+    ewe:generatesEvent roi:ResourceCreated ;
+    ewe:generatesEvent roi:ResourceUpdated ;
+    ewe:generatesEvent roi:ResourceDeleted ;
+    ewe:providesAction roi:CreateResource ;
+    ewe:providesAction roi:UpdateResource ;
+    ewe:providesAction roi:DeleteResource ;
+    ewe:hasCategory ewe-service:Service ;
+    rdfs:subClassOf ewe:Channel .
+
+
+###################################
+# Events definition
+###################################
+roi:ResourceCreated a owl:Class ;
+    rdfs:label "OSLC resource created" ;
+    rdfs:comment "This event will be triggered when a new OSLC resource is created." ;
+    rdfs:subClassOf ewe:Event ;
+    rdfs:domain roi:OSLCServer .
+
+roi:ResourceUpdated a owl:Class ;
+    rdfs:label "OSLC resource updated" ;
+    rdfs:comment "This event will be triggered when a new OSLC resource is updated." ;
+    rdfs:subClassOf ewe:Event ;
+    rdfs:domain roi:OSLCServer .
+
+roi:ResourceDeleted a owl:Class ;
+    rdfs:label "OSLC resource resource" ;
+    rdfs:comment "This event will be triggered when a new OSLC resource is deleted." ;
+    rdfs:subClassOf ewe:Event ;
+    rdfs:domain roi:OSLCServer .
+
+
+###################################
+# Actions definition
+###################################
+roi:CreateResource a owl:Class ;
+    rdfs:label "Create OSLC resource" ;
+    rdfs:comment "This action will create an OSLC resource." ;
+    rdfs:subClassOf ewe:Action ;
+    rdfs:domain roi:OSLCServer .
+
+roi:UpdateResource a owl:Class ;
+    rdfs:label "Update OSLC resource" ;
+    rdfs:comment "This action will update an OSLC resource." ;
+    rdfs:subClassOf ewe:Action ;
+    rdfs:domain roi:OSLCServer .
+
+roi:DeleteResource a owl:Class ;
+    rdfs:label "Delete OSLC resource" ;
+    rdfs:comment "This action will delete an OSLC resource." ;
+    rdfs:subClassOf ewe:Action ;
+    rdfs:domain roi:OSLCServer .
+
+
+###################################
+# Parameters definition
+###################################
+roi:ResourceProperties a owl:Class ;
+    rdfs:label "Resource Properties" ;
+    rdfs:comment "This parameter contains the properties of the OSLC resource that will be created or updated." ;
+    rdfs:subClassOf ewe:Parameter ;
+    rdfs:domain roi:OSLCServer .
+
+roi:QueryProperties a owl:Class ;
+    rdfs:label "Query Properties" ;
+    rdfs:comment "This parameter contains the properties of the OSLC resource that was updated or deleted." ;
+    rdfs:subClassOf ewe:Parameter ;
+    rdfs:domain roi:OSLCServer .

@@ -2,11 +2,58 @@ import json
 import requests
 import os
 import time
+from rdflib import Graph
 
 api = "http://localhost:5050"
-def new_rule(payload):
+# def new_rule(payload):
+#     url = api+"/rules/new"
+#     data = requests.post(url, json=payload).status_code
+#     print(data)
+
+def new_rule():
     url = api+"/rules/new"
-    data = requests.post(url, json=payload).status_code
+
+    rule = """
+        @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+        @prefix ewe: <http://gsi.dit.upm.es/ontologies/ewe/ns/>.
+        @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+        @prefix string: <http://www.w3.org/2000/10/swap/string#>.
+        @prefix math: <http://www.w3.org/2000/10/swap/math#>.
+        {
+            ?event1 rdf:type <http://gsi.dit.upm.es/ontologies/ewe/ns/ResourceUpdated>;
+                rdf:type ewe:Event;
+                ewe:isGeneratedBy <http://gsi.dit.upm.es/ontologies/ewe/ns/OSLCServer>.
+            ?event1 ewe:hasParameter ?eparam1.
+            ?eparam1 rdf:type <http://open-services.net/ns/core/trs#Modification> .
+            ?eparam1 rdf:value ?value .
+        } => {
+            ewe:action_createresource1 rdf:type <http://gsi.dit.upm.es/ontologies/ewe/ns/CreateResource>; 
+                rdf:type ewe:Action;
+                ewe:isProvidedBy <http://gsi.dit.upm.es/ontologies/ewe/ns/OSLCServer>.
+            ewe:action_createresource1 ewe:hasParameter ewe:resourceuri1.
+            ewe:resourceuri1 rdf:type <http://gsi.dit.upm.es/ontologies/ewe/ns/ResourceURI> .
+            ewe:resourceuri1  rdf:value ?value . 
+        }."""
+
+    payload = """
+        @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . 
+        @prefix ewe: <http://gsi.dit.upm.es/ontologies/ewe/ns/> . 
+        @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . 
+
+        ewe:rule123456789 rdf:type ewe:Rule ;
+            rdfs:label "new rule example" ;
+            rdfs:comment "New example of a EWE rule" ;
+            rdf:value \"""%s\""" ;
+            ewe:triggeredBy <http://gsi.dit.upm.es/ontologies/ewe/ns/ResourceCreated> ;
+            ewe:executes <http://gsi.dit.upm.es/ontologies/ewe/ns/CreateResource> ;
+            ewe:hasCreator <http://gsi.dit.upm.es/ontologies/ewe/ns/usertest> .
+    """ % (rule)
+
+    print(payload)
+
+    Graph().parse(data=payload, format='n3')
+
+    data = requests.post(url, data=payload, headers={'Content-type': 'text/n3'}).status_code
     print(data)
 
 def get_rules():
@@ -51,13 +98,13 @@ def evaluate():
         @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 
         _:event rdfs:label "New OSLC resource created" ;
-            rdf:type ewe:ResourceCreated ;
+            rdf:type ewe:ResourceUpdated ;
             rdf:type ewe:Event ;
             ewe:hasParameter [
-                rdf:type <http://open-services.net/ns/core/trs#Creation> ;
-                rdf:value "" ;
+                rdf:type <http://open-services.net/ns/core/trs#Modification> ;
+                rdf:value "chinga tu mai" ;
             ] ;
-            rdfs:domain ewe:OSLC .
+            ewe:isGeneratedBy ewe:OSLCServer .
         
         _:user rdf:type ewe:User ;
             foaf:accountName "usertest" .

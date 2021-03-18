@@ -100,7 +100,7 @@ create_rule = {
     "actions" : [{"@id": "http://gsi.dit.upm.es/ontologies/ewe/ns/CreateResource",
                   "rdfs:label": "Create resource",
                   "rdfs:domain": "http://gsi.dit.upm.es/ontologies/ewe/ns/OSLC",
-                  "parameters":[{ "@id": "http://gsi.dit.upm.es/ontologies/ewe/ns/ResourceURI",
+                  "parameters":[{ "@id": "http://gsi.dit.upm.es/ontologies/ewe/ns/CreationURI",
                                   "rdfs:label": "Resource URI", 
                                   "rdf:type": "http://gsi.dit.upm.es/ontologies/ewe/ns/ResourceURI",
                                   "rdf:value" : "http://localhost:5000/service/serviceProviders/345978727/changeRequests"

@@ -2,7 +2,7 @@ import requests
 import time
 from rdflib import Graph, Namespace, BNode, URIRef
 from rdflib.namespace import RDFS, RDF
-from interfaces.ewe import evaluate
+from ewe import evaluate
 
 TRS = Namespace('http://open-services.net/ns/core/trs#')
 LDP = Namespace('http://www.w3.org/ns/ldp#')
@@ -105,9 +105,10 @@ def apply_resource_changes(uri, credentials, store, change_log):
     for event in change_log:
         if event["action"] == TRS.Creation:
             print("Creating:")
-            response = requests.get(str(event["resource"]), auth=credentials, headers={'Accept': 'text/turtle'})
+            print(event["resource"])
+            response = requests.get(str(event["resource"]), auth=credentials, headers={'Accept': 'application/rdf+xml'})
             print(response.content.decode('ascii'))
-            store.parse(data=response.content, format='turtle')
+            store.parse(data=response.content, format='application/rdf+xml')
 
             # Send event to EWE Tasker
             evaluate(event['action'], store.triples((event["resource"], None, None)))
@@ -118,9 +119,9 @@ def apply_resource_changes(uri, credentials, store, change_log):
         elif event["action"] == TRS.Modification:
             print("Updating:")
             store.remove((event["resource"], None, None))
-            response = requests.get(str(event["resource"]), auth=credentials, headers={'Accept': 'text/turtle'})
+            response = requests.get(str(event["resource"]), auth=credentials, headers={'Accept': 'application/rdf+xml'})
             print(response.content.decode('ascii'))
-            store.parse(data=response.content, format='turtle')
+            store.parse(data=response.content, format='application/rdf+xml')
 
             # Send event to EWE Tasker
             evaluate(event['action'], store.triples((event["resource"], None, None)))
@@ -150,10 +151,10 @@ def apply_resource_changes(uri, credentials, store, change_log):
 if __name__ == "__main__":
 
     # TODO: env variables
-    # uri = 'http://localhost:8085/OSLC4JBugzilla/services/trs'
-    # credentials = ('admin', 'adminpass')
-    uri = 'http://localhost:5000/service/trackedResourceSet'
-    credentials = ('', '')
+    uri = 'http://localhost:8085/OSLC4JBugzilla/services/trs'
+    credentials = ('admin', 'adminpass')
+    # uri = 'http://localhost:5000/service/trackedResourceSet'
+    # credentials = ('', '')
     store = Graph()
 
     print("\nInitializing...\n")

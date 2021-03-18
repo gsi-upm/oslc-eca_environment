@@ -1,7 +1,7 @@
-import json
 import requests
 import os
-import time
+# TODO: use python packaging system
+from actions import actuator
 
 # TODO: env variable
 EWE_URL = "http://localhost:5050"
@@ -35,7 +35,9 @@ def evaluate(action, triples):
         {} {} {} .
         """.format(s.n3(), p.n3(), o.n3())
 
-    # print(payload)
-    r = requests.post(url, data=payload, headers={'Content-type': 'text/n3', 'Accept': 'text/n3'})
-    print(r.text)
+    print(payload)
+    response = requests.post(url, data=payload, headers={'Content-type': 'text/n3', 'Accept': 'text/n3'})
+    print("Response from EWE Tasker: "+response.content.decode('utf-8'))
+
+    actuator(response.content)
     return

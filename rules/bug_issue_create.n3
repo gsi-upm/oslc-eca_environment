@@ -1,0 +1,23 @@
+@prefix roi: <http://gsi.upm.es/ontologies/roi> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix ewe: <http://gsi.dit.upm.es/ontologies/ewe/ns/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix string: <http://www.w3.org/2000/10/swap/string#>.
+@prefix math: <http://www.w3.org/2000/10/swap/math#>.
+{
+    ?event1 rdf:type <http://gsi.dit.upm.es/ontologies/ewe/ns/ResourceCreated>;
+        rdf:type ewe:Event;
+        ewe:isGeneratedBy <http://gsi.dit.upm.es/ontologies/ewe/ns/oslcServerBugzilla>.
+    ?event1 ewe:hasParameter ?eparam1.
+    ?eparam1 rdf:type ewe:ResourceProperties .
+    ?eparam1 rdf:value [
+        
+    ] .
+} => {
+    ewe:action_createresource1 rdf:type <http://gsi.dit.upm.es/ontologies/ewe/ns/CreateResource>; 
+        rdf:type ewe:Action;
+        ewe:isProvidedBy <http://gsi.dit.upm.es/ontologies/ewe/ns/OSLCServer>.
+    ewe:action_createresource1 ewe:hasParameter ewe:resourceuri1.
+    ewe:resourceuri1 rdf:type <http://gsi.dit.upm.es/ontologies/ewe/ns/ResourceURI> .
+    ewe:resourceuri1  rdf:value ?value . 
+}.
