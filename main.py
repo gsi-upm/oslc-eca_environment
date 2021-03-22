@@ -1,11 +1,11 @@
 from models.roi import Workflow, Step, OSLCServer, Rule
 from models.ewetasker import EWETasker
 from models.trsclient import TRSClient
-from models.activityrecord import EventQueue
+from models.events import EventQueue
+from models.actions import ActionQueue
 from create_workflow import generate_rules, generate_oslc_servers
 from visuals import visualize
 import time
-
 
 if __name__ == "__main__":
 
@@ -40,31 +40,46 @@ if __name__ == "__main__":
                 trs_client.incremental_update()
                 step.clients.append(trs_client)
 
+            print('\nStep {}:\n'.format(step.order))
+            step.display()
 
-        queue = EventQueue()
+        event_queue = EventQueue()
+        action_queue = ActionQueue()
         
         for step in workflow.steps:
+
             print("\nListening for events\n")
-            while True:
+            while not action_queue.actions:
+
                 for client in step.clients:
                     client.incremental_update(
-                        create_callback = queue.new_create_event,
-                        update_callback = queue.new_update_event,
-                        delete_callback = queue.new_delete_event
+                        create_callback = event_queue.new_create_event,
+                        update_callback = event_queue.new_update_event,
+                        delete_callback = event_queue.new_delete_event
                     )
-                    for event in queue.events:
-                        queue.events.remove(event)
-                        event.add_channel(client.channel)
-                        print(step.user.username)
-                        print(event.get_rdf())
-                        action = ewe_tasker.evaluate(event.get_rdf(), step.user.username)
-                        print(action.decode('utf-8'))
+
+                for event in event_queue.events:
+                    event_queue.events.remove(event)
+                    event.add_channel(client.channel)
+
+                    print('\nEvent triggered:\n')
+                    print(event.get_rdf())
+
+                    # Send event to EWE Tasker
+                    actions = ewe_tasker.evaluate(event.get_rdf(), step.user.username)
+                    action_queue.add(actions)
+                    
+                    print('\nActions executed:\n')
+                    print(actions.decode('utf-8'))
 
                 time.sleep(5)
 
+                for action in action_queue.actions:
+                    action.set_credentials(step)
+                    action.execute()
 
-            print('\nStep {}:\n'.format(step.order))
-            step.display()
+
+            
             
 
     else:
