@@ -1,23 +1,33 @@
-@prefix roi: <http://gsi.upm.es/ontologies/roi> .
+@prefix roi: <http://gsi.upm.es/ontologies/roi/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oslc: <http://open-services.net/ns/core#> .
+@prefix oslc_cm: <http://open-services.net/ns/cm#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix ewe: <http://gsi.dit.upm.es/ontologies/ewe/ns/>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix string: <http://www.w3.org/2000/10/swap/string#>.
 @prefix math: <http://www.w3.org/2000/10/swap/math#>.
+@prefix bugz: <http://www.bugzilla.org/rdf#> .
 {
-    ?event1 rdf:type <http://gsi.dit.upm.es/ontologies/ewe/ns/ResourceCreated>;
-        rdf:type ewe:Event;
-        ewe:isGeneratedBy <http://gsi.dit.upm.es/ontologies/ewe/ns/oslcServerBugzilla>.
-    ?event1 ewe:hasParameter ?eparam1.
-    ?eparam1 rdf:type ewe:ResourceProperties .
-    ?eparam1 rdf:value [
-        
-    ] .
+    ?event1 rdf:type roi:ResourceCreated ;
+        rdf:type ewe:Event ;
+        ewe:isGeneratedBy roi:oslcServerBugzilla .
+    ?event1 ewe:hasParameter ?eparam1 .
+    ?eparam1 rdf:type ewe:Parameter ;
+        rdf:type roi:ResourceProperties ;
+        dcterms:title ?title ;
+        dcterms:contributor <http://localhost:8085/OSLC4JBugzilla/person?mbox=admin> ;
+        oslc:serviceProvider <http://localhost:8085/OSLC4JBugzilla/services/serviceProviders/1> ;
+        oslc_cm:status ?status .
 } => {
-    ewe:action_createresource1 rdf:type <http://gsi.dit.upm.es/ontologies/ewe/ns/CreateResource>; 
+    roi:action1 rdf:type roi:CreateResource ; 
         rdf:type ewe:Action;
-        ewe:isProvidedBy <http://gsi.dit.upm.es/ontologies/ewe/ns/OSLCServer>.
-    ewe:action_createresource1 ewe:hasParameter ewe:resourceuri1.
-    ewe:resourceuri1 rdf:type <http://gsi.dit.upm.es/ontologies/ewe/ns/ResourceURI> .
-    ewe:resourceuri1  rdf:value ?value . 
+        ewe:isProvidedBy roi:oslcServerGithub .
+    roi:action1 ewe:hasParameter roi:aparam1.
+    roi:aparam1 rdf:type ewe:Parameter ;
+        rdf:type roi:ResourceProperties ;
+        dcterms:title ?title ;
+        dcterms:contributor "GuillermoGarcia96" ;
+        oslc:serviceProvider <http://localhost:5000/service/serviceProviders/345978727> ;
+        oslc_cm:status ?status .
 }.

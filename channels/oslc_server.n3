@@ -37,20 +37,24 @@ roi:OSLCServer a owl:Class ;
 roi:ResourceCreated a owl:Class ;
     rdfs:label "OSLC resource created" ;
     rdfs:comment "This event will be triggered when a new OSLC resource is created." ;
+    ewe:hasParameter roi:ResourceProperties ;
     rdfs:subClassOf ewe:Event ;
-    rdfs:domain roi:OSLCServer .
+    ewe:isGeneratedBy roi:OSLCServer .
 
 roi:ResourceUpdated a owl:Class ;
     rdfs:label "OSLC resource updated" ;
     rdfs:comment "This event will be triggered when a new OSLC resource is updated." ;
+    ewe:hasParameter roi:ResourceProperties ;
+    ewe:hasParameter roi:QueryProperties ;
     rdfs:subClassOf ewe:Event ;
-    rdfs:domain roi:OSLCServer .
+   ewe:isGeneratedBy roi:OSLCServer .
 
 roi:ResourceDeleted a owl:Class ;
     rdfs:label "OSLC resource resource" ;
     rdfs:comment "This event will be triggered when a new OSLC resource is deleted." ;
+    ewe:hasParameter roi:QueryProperties ;
     rdfs:subClassOf ewe:Event ;
-    rdfs:domain roi:OSLCServer .
+    ewe:isGeneratedBy roi:OSLCServer .
 
 
 ###################################
@@ -59,20 +63,24 @@ roi:ResourceDeleted a owl:Class ;
 roi:CreateResource a owl:Class ;
     rdfs:label "Create OSLC resource" ;
     rdfs:comment "This action will create an OSLC resource." ;
+    ewe:hasParameter roi:ResourceProperties ;
     rdfs:subClassOf ewe:Action ;
-    rdfs:domain roi:OSLCServer .
+    ewe:isProvidedBy roi:OSLCServer .
 
 roi:UpdateResource a owl:Class ;
     rdfs:label "Update OSLC resource" ;
     rdfs:comment "This action will update an OSLC resource." ;
+    ewe:hasParameter roi:ResourceProperties ;
+    ewe:hasParameter roi:QueryProperties ;
     rdfs:subClassOf ewe:Action ;
-    rdfs:domain roi:OSLCServer .
+    ewe:isProvidedBy roi:OSLCServer .
 
 roi:DeleteResource a owl:Class ;
     rdfs:label "Delete OSLC resource" ;
     rdfs:comment "This action will delete an OSLC resource." ;
+    ewe:hasParameter roi:QueryProperties ;
     rdfs:subClassOf ewe:Action ;
-    rdfs:domain roi:OSLCServer .
+    ewe:isProvidedBy roi:OSLCServer .
 
 
 ###################################
@@ -81,11 +89,9 @@ roi:DeleteResource a owl:Class ;
 roi:ResourceProperties a owl:Class ;
     rdfs:label "Resource Properties" ;
     rdfs:comment "This parameter contains the properties of the OSLC resource that will be created or updated." ;
-    rdfs:subClassOf ewe:Parameter ;
-    rdfs:domain roi:OSLCServer .
+    rdfs:subClassOf ewe:Parameter .
 
 roi:QueryProperties a owl:Class ;
     rdfs:label "Query Properties" ;
     rdfs:comment "This parameter contains the properties of the OSLC resource that was updated or deleted." ;
-    rdfs:subClassOf ewe:Parameter ;
-    rdfs:domain roi:OSLCServer .
+    rdfs:subClassOf ewe:Parameter .

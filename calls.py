@@ -90,43 +90,33 @@ def delete_user(username, password):
 
 def evaluate():
     url = api+"/evaluate"
-    payload = """
-        @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-        @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+    username = "usertest"
+    event = """
+        @prefix bugz: <http://www.bugzilla.org/rdf#> .
+        @prefix dcterms: <http://purl.org/dc/terms/> .
         @prefix ewe: <http://gsi.dit.upm.es/ontologies/ewe/ns/> .
-        @prefix string: <http://www.w3.org/2000/10/swap/string#> .
-        @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+        @prefix oslc: <http://open-services.net/ns/core#> .
+        @prefix oslc_cm: <http://open-services.net/ns/cm#> .
+        @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+        @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-        _:event rdfs:label "New OSLC resource created" ;
-            rdf:type ewe:ResourceUpdated ;
-            rdf:type ewe:Event ;
+        <http://www.gsi.upm.es/ontologies/roi/event139862529957744> rdf:type <http://gsi.dit.upm.es/ontologies/ewe/ns/ResourceUpdated>;
+            rdf:type ewe:Event;
+            ewe:isGeneratedBy <http://gsi.dit.upm.es/ontologies/ewe/ns/OSLCServer> ;
             ewe:hasParameter [
                 rdf:type <http://open-services.net/ns/core/trs#Modification> ;
-                rdf:value "chinga tu mai" ;
+                rdf:value "la concha tu mai"
             ] ;
-            ewe:isGeneratedBy ewe:OSLCServer .
-        
-        _:user rdf:type ewe:User ;
-            foaf:accountName "usertest" .
-    
-        <http://localhost:5000/service/serviceProviders/345978727/changeRequests/88> <http://purl.org/dc/terms/description> "ejemplo" .
-
-        <http://localhost:5000/service/serviceProviders/345978727/changeRequests/88> <http://open-services.net/ns/cm#status> "open" .
-        
-        <http://localhost:5000/service/serviceProviders/345978727/changeRequests/88> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://open-services.net/ns/cm#ChangeRequest> .
-        
-        <http://localhost:5000/service/serviceProviders/345978727/changeRequests/88> <http://purl.org/dc/terms/modified> "2021-03-15T16:23:55"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
-        
-        <http://localhost:5000/service/serviceProviders/345978727/changeRequests/88> <http://purl.org/dc/terms/contributor> "None" .
-        
-        <http://localhost:5000/service/serviceProviders/345978727/changeRequests/88> <http://purl.org/dc/terms/title> "ejemplo" .
-        
-        <http://localhost:5000/service/serviceProviders/345978727/changeRequests/88> <http://purl.org/dc/terms/created> "2021-03-15T16:23:55"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
-        
-        <http://localhost:5000/service/serviceProviders/345978727/changeRequests/88> <http://open-services.net/ns/core#serviceProvider> <http://localhost:5000/service/serviceProviders/345978727> .
-        
-        <http://localhost:5000/service/serviceProviders/345978727/changeRequests/88> <http://purl.org/dc/terms/identifier> "88"^^<http://www.w3.org/2001/XMLSchema#integer> .
+            ewe:hasParameter [
+                rdf:type <http://open-services.net/ns/core/trs#Creation> ;
+                rdf:value "la concha tu mai"
+            ] ;
+            ewe:hasParameter [
+                rdf:type <http://open-services.net/ns/core/trs#Deletion> ;
+                rdf:value "la concha tu mai"
+            ] .
     """
 
-    r = requests.post(url, data=payload, headers={'Content-type': 'text/n3', 'Accept': 'text/n3'})
+    r = requests.post(url, data={"event": event, "username": username})
     print(r.text)

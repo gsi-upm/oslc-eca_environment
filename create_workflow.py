@@ -1,5 +1,6 @@
 from models.roi import Workflow, Step, OSLCServer, Rule
 from tkinter import filedialog
+from rdflib import Graph
 
 
 def generate_oslc_servers(step):
@@ -7,8 +8,8 @@ def generate_oslc_servers(step):
     # oslc_server = new_oslc_server()
     oslc_server = OSLCServer(
         name = 'Bugzilla', 
-        oslc = 'http://localhost:8080/OSLC4JBugzilla/services/catalog',
-        trs = 'http://localhost:8080/OSLC4JBugzilla/services/trs',
+        oslc = 'http://localhost:8085/OSLC4JBugzilla/services/catalog',
+        trs = 'http://localhost:8085/OSLC4JBugzilla/services/trs',
         user = 'admin',
         password = 'adminpass'
     )
@@ -43,20 +44,22 @@ def generate_rules(step):
         rule.set_value(reader.read())
 
     print('\nImported rule:\n')
-    print(rule.value)
+    g = Graph()
+    g.parse(data=rule.value, format='n3')
+    print(g.serialize(format='n3').decode('utf-8'))
     step.add_rule(rule)
     input()
 
-    print('\nChoose rules from file:\n')
-    rule = Rule(step.user)
-    # new_rule(rule)
-    with open('rules/bug_issue_update.n3') as reader:
-        rule.set_value(reader.read())
+    # print('\nChoose rules from file:\n')
+    # rule = Rule(step.user)
+    # # new_rule(rule)
+    # with open('rules/bug_issue_update.n3') as reader:
+    #     rule.set_value(reader.read())
 
-    print('\nImported rule:\n')
-    print(rule.value)
-    step.add_rule(rule)
-    input()
+    # print('\nImported rule:\n')
+    # print(rule.value)
+    # step.add_rule(rule)
+    # input()
 
 
 def new_oslc_server():

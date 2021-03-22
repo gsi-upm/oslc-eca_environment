@@ -1,7 +1,7 @@
-from rdflib import Graph, URIRef, Namespace, Literal, RDF, FOAF
+from rdflib import Graph, URIRef, Namespace, Literal, RDF, RDFS, FOAF
 from rdflib.resource import Resource
 
-ROI = Namespace('http://www.gsi.upm.es/ontologies/roi/')
+ROI = Namespace('http://gsi.upm.es/ontologies/roi/')
 EWE = Namespace('http://gsi.dit.upm.es/ontologies/ewe/ns/')
 
 class Workflow:
@@ -35,6 +35,7 @@ class Step:
         self.input = []
         self.output = []
         self.rules = []
+        self.clients = []
 
         self.rdf.add((self.uri, RDF.type, ROI.Step))
         self.rdf.add((self.uri, ROI.order, Literal(order)))
@@ -89,11 +90,15 @@ class OSLCServer:
 class Rule:
     def __init__(self, user):
         self.rdf = Graph()
-        self.uri = ROI['rule'+str(id(self))]
+        self.uri = EWE['rule'+str(id(self))]
         self.user = user
 
         self.rdf.add((self.uri, RDF.type, EWE.Rule))
-        self.rdf.add((self.uri, EWE.hasCreator, user))
+        self.rdf.add((self.uri, EWE.hasCreator, user.uri))
+        self.rdf.add((self.uri, RDFS.label, Literal('label')))
+        self.rdf.add((self.uri, RDFS.comment, Literal('comment')))
+        self.rdf.add((self.uri, EWE.triggeredBy, EWE.Event))
+        self.rdf.add((self.uri, EWE.executes, EWE.Action))
 
     def display(self):
         print(self.rdf.serialize(format='n3').decode('utf-8'))
