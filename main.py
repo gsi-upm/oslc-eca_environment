@@ -74,13 +74,11 @@ if __name__ == "__main__":
 
                 time.sleep(5)
 
-                for action in action_queue.actions:
-                    action.set_credentials(step)
-                    action.execute()
+            for action in action_queue.actions:
+                action.set_credentials(step)
+                action.execute()
 
 
-            
-            
 
     else:
         print('\nExiting...')
