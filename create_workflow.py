@@ -7,11 +7,11 @@ def generate_oslc_servers(step):
     print('\nChoose OSLC servers to get input from:')
     # oslc_server = new_oslc_server()
     oslc_server = OSLCServer(
-        name = 'Bugzilla', 
-        oslc = 'http://localhost:8085/OSLC4JBugzilla/services/catalog',
-        trs = 'http://localhost:8085/OSLC4JBugzilla/services/trs',
-        user = 'admin',
-        password = 'adminpass'
+        name = 'Github', 
+        oslc = 'http://localhost:5001/service/catalog',
+        trs = 'http://localhost:5001/service/trackedResourceSet',
+        user = '',
+        password = ''
     )
 
     print('\n  - {} OSLC server:\n'.format(oslc_server.name))
@@ -23,11 +23,11 @@ def generate_oslc_servers(step):
     print('\nChoose OSLC servers to get output from:')
     # oslc_server = new_oslc_server()
     oslc_server = OSLCServer(
-        name = 'Github', 
-        oslc = 'http://localhost:5000/service/catalog',
-        trs = 'http://localhost:5000/service/trackedResourceSet',
-        user = '',
-        password = ''
+        name = 'Bugzilla', 
+        oslc = 'http://localhost:5000/service/serviceProviders/catalog',
+        trs = 'http://localhost:8085/OSLC4JBugzilla/services/trs',
+        user = 'admin',
+        password = 'adminpass'
     )
 
     print('\n  - {} OSLC server:\n'.format(oslc_server.name))
@@ -40,7 +40,8 @@ def generate_rules(step):
     print('\nChoose rules from file:\n')
     rule = Rule(step.user)
     # new_rule(rule)
-    with open('rules/bug_issue_create.n3') as reader:
+    # with open('rules/bug_issue_create.n3') as reader:
+    with open('rules/issue_bug_create.n3') as reader:
         rule.set_value(reader.read())
 
     print('\nImported rule:\n')
@@ -50,16 +51,17 @@ def generate_rules(step):
     step.add_rule(rule)
     input()
 
-    # print('\nChoose rules from file:\n')
-    # rule = Rule(step.user)
-    # # new_rule(rule)
+    print('\nChoose rules from file:\n')
+    rule = Rule(step.user)
+    # new_rule(rule)
     # with open('rules/bug_issue_update.n3') as reader:
-    #     rule.set_value(reader.read())
+    with open('rules/issue_bug_update.n3') as reader:
+        rule.set_value(reader.read())
 
-    # print('\nImported rule:\n')
-    # print(rule.value)
-    # step.add_rule(rule)
-    # input()
+    print('\nImported rule:\n')
+    print(rule.value)
+    step.add_rule(rule)
+    input()
 
 
 def new_oslc_server():

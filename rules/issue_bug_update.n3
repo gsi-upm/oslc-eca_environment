@@ -11,7 +11,7 @@
 {
     ?event1 rdf:type roi:ResourceUpdated ;
         rdf:type ewe:Event ;
-        ewe:isGeneratedBy roi:oslcServerBugzilla .
+        ewe:isGeneratedBy roi:oslcServerGithub .
     ?event1 ewe:hasParameter ?eparam1 .
     ?event1 ewe:hasParameter ?eparam2 .
     ?eparam1 rdf:type ewe:Parameter ;
@@ -20,14 +20,12 @@
     ?eparam2 rdf:type ewe:Parameter ;
         rdf:type roi:ResourceProperties ;
         dcterms:title ?title ;
-        dcterms:contributor <http://localhost:8085/OSLC4JBugzilla/person?mbox=admin> ;
-        oslc:serviceProvider <http://localhost:8085/OSLC4JBugzilla/services/serviceProviders/1> ;
-        oslc_cm:status ?status .
+        oslc:serviceProvider <http://localhost:5001/service/serviceProviders/1> .
 } => {
     roi:action1 rdf:type roi:UpdateResource ; 
         rdf:type ewe:Action;
-        ewe:isProvidedBy roi:oslcServerGithub .
-    roi:action1 ewe:hasParameter roi:aparam1 .
+        ewe:isProvidedBy roi:oslcServerBugzilla .
+    roi:action1 ewe:hasParameter roi:aparam1.
     roi:action1 ewe:hasParameter roi:aparam2 .
     roi:aparam1 rdf:type ewe:Parameter ;
         rdf:type roi:QueryProperties ;
@@ -36,8 +34,13 @@
     roi:aparam2 rdf:type ewe:Parameter ;
         rdf:type roi:ResourceProperties ;
         dcterms:title ?title ;
-        dcterms:contributor "GuillermoGarcia96" ;
-        dcterms:description "" ;
+        dcterms:contributor "admin" ;
         oslc:serviceProvider <http://localhost:5000/service/serviceProviders/1> ;
-        oslc_cm:status ?status .
+        oslc_cm:severity "enhancement" ;
+        oslc_cm:status "CONFIRMED" ;
+        bugz:component "TestComponent" ;
+        bugz:operatingSystem "Linux" ;
+        bugz:platform "PC" ;
+        bugz:priority "---" ;
+        bugz:version "unspecified" .
 }.

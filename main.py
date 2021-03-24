@@ -46,37 +46,43 @@ if __name__ == "__main__":
         event_queue = EventQueue()
         action_queue = ActionQueue()
         
-        for step in workflow.steps:
+        while True:
 
-            print("\nListening for events\n")
-            while not action_queue.actions:
+            # Run each step in order
+            for step in workflow.steps:
 
-                for client in step.clients:
-                    client.incremental_update(
-                        create_callback = event_queue.new_create_event,
-                        update_callback = event_queue.new_update_event,
-                        delete_callback = event_queue.new_delete_event
-                    )
+                print("\nListening for events\n")
+                while not action_queue.actions:
 
-                for event in event_queue.events:
-                    event_queue.events.remove(event)
-                    event.add_channel(client.channel)
+                    # Listen to every input OSLC Server for events
+                    for client in step.clients:
+                        client.incremental_update(
+                            create_callback = event_queue.new_create_event,
+                            update_callback = event_queue.new_update_event,
+                            delete_callback = event_queue.new_delete_event
+                        )
 
-                    print('\nEvent triggered:\n')
-                    print(event.get_rdf())
+                    # When there are events, evaluate the rules in EWE Tasker
+                    for event in event_queue.events:
+                        event_queue.events.remove(event)
+                        event.add_channel(client.channel)
 
-                    # Send event to EWE Tasker
-                    actions = ewe_tasker.evaluate(event.get_rdf(), step.user.username)
-                    action_queue.add(actions)
-                    
-                    print('\nActions executed:\n')
-                    print(actions.decode('utf-8'))
+                        print('\nEvent triggered:\n')
+                        print(event.get_rdf())
 
-                time.sleep(5)
+                        actions = ewe_tasker.evaluate(event.get_rdf(), step.user.username)
+                        action_queue.add(actions)
+                        
+                        print('\nActions executed:\n')
+                        print(actions.decode('utf-8'))
 
-            for action in action_queue.actions:
-                action.set_credentials(step)
-                action.execute()
+                    time.sleep(5)
+
+                # When EWE Tasker returns an action, execute it
+                for action in action_queue.actions:
+                    action_queue.actions.remove(action)
+                    action.set_credentials(step)
+                    action.execute()
 
 
 
