@@ -5,9 +5,10 @@ ROI = Namespace('http://gsi.upm.es/ontologies/roi/')
 EWE = Namespace('http://gsi.dit.upm.es/ontologies/ewe/ns/')
 
 class Workflow:
-    def __init__(self):
+    def __init__(self, name):
         self.rdf = Graph()
         self.uri = ROI['workflow'+str(id(self))]
+        self.name = name
 
         self.rdf.add((self.uri, RDF.type, ROI.Workflow))
 

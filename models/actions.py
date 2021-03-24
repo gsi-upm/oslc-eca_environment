@@ -74,8 +74,6 @@ class Action:
         data = requests.get(query_uri, auth=self.credentials, headers={'Accept': 'text/n3'}).content
         resource_list = Graph()
         resource_list.parse(format='n3', data=data)
-        print(resource_list.serialize(format='n3').decode('utf-8'))
-        print(query)
 
         update_uri = next(result.uri for result in resource_list.query(query))
         payload = resource.serialize(format='turtle')

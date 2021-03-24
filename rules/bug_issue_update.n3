@@ -32,12 +32,12 @@
     roi:aparam1 rdf:type ewe:Parameter ;
         rdf:type roi:QueryProperties ;
         dcterms:title ?query_title ;
-        oslc:serviceProvider <http://localhost:5000/service/serviceProviders/1> .
+        oslc:serviceProvider <http://localhost:5001/service/serviceProviders/1> .
     roi:aparam2 rdf:type ewe:Parameter ;
         rdf:type roi:ResourceProperties ;
         dcterms:title ?title ;
         dcterms:contributor "GuillermoGarcia96" ;
         dcterms:description "" ;
-        oslc:serviceProvider <http://localhost:5000/service/serviceProviders/1> ;
+        oslc:serviceProvider <http://localhost:5001/service/serviceProviders/1> ;
         oslc_cm:status ?status .
 }.
