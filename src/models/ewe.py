@@ -1,50 +1,11 @@
 from rdflib import Graph, URIRef, Namespace, Literal, BNode, RDF, RDFS, FOAF
 from rdflib.resource import Resource
+import requests
 
 ROI = Namespace('http://gsi.upm.es/ontologies/roi/')
 EWE = Namespace('http://gsi.dit.upm.es/ontologies/ewe/ns/')
-
-
-class EventQueue:
-    def __init__(self):
-        self.events = []
-
-    def new_create_event(self, resource):
-        event = Event(ROI.ResourceCreated)
-        param = ResourceProperties()
-
-        for (s, p, o) in resource:
-            param.add(p, o)
-
-        event.add_parameter(param)
-        self.events.append(event)
-
-
-    def new_update_event(self, resource, previous_resource):
-        event = Event(ROI.ResourceUpdated)
-        param1 = ResourceProperties()
-        param2 = QueryProperties()
-
-        for (s, p, o) in resource:
-            param1.add(p, o)
-        
-        for (s, p, o) in previous_resource:
-            param2.add(p, o)
-
-        event.add_parameter(param1)
-        event.add_parameter(param2)
-        self.events.append(event)
-
-
-    def new_delete_event(self, previous_resource):
-        event = Event(ROI.ResourceDeleted)
-        param = QueryProperties()
-
-        for (s, p, o) in previous_resource:
-            param.add(p, o)
-
-        event.add_parameter(param)
-        self.events.append(event)
+OSLC_CM = Namespace('http://open-services.net/ns/cm#')
+OSLC = Namespace('http://open-services.net/ns/core#')
 
 
 class Event:
@@ -72,6 +33,53 @@ class Event:
         for p in self.parameters:
             g += p.rdf
         return g.serialize(format='n3').decode('utf-8')
+
+
+class Action:
+    def __init__(self):
+        self.rdf = Graph()
+
+    def get_resource(self):
+
+        resource = Graph()
+        resource_uri = BNode()
+
+        for properties in self.rdf.subjects(RDF.type, ROI.ResourceProperties):
+            for (p, o) in self.rdf.predicate_objects(properties):
+                if p != RDF.type:
+                    resource.add((resource_uri, p, o))
+
+        resource.add((resource_uri, RDF.type, OSLC_CM.ChangeRequest))
+
+        return resource
+
+    # Improvement: URL encoded requests
+    def get_query(self):
+
+        query = """
+            select ?uri
+            where {
+        """
+
+        for properties in self.rdf.subjects(RDF.type, ROI.QueryProperties):
+            for (p, o) in self.rdf.predicate_objects(properties):
+                if p == RDF.type:
+                    continue
+                query += "?uri {} {} .\n".format(p.n3(), o.n3())
+
+        query += "}"
+
+        return query
+
+    def get_service_provider(self, credentials):
+        uri = next(str(uri) for uri in self.rdf.objects(None, OSLC.serviceProvider))
+
+        serviceProvider = requests.get(uri, auth=credentials, headers={'Accept': 'text/n3'}).content
+
+        g = Graph()
+        g.parse(data=serviceProvider, format='n3')
+
+        return g
 
 
 class QueryProperties:
@@ -110,3 +118,5 @@ class ResourceProperties:
         self.rdf.add((self.uri, rdftype, rdfvalue))
 
         self.properties.append({'type': rdftype, 'value': rdfvalue})
+    
+        

@@ -1,9 +1,6 @@
-from models.roi import Workflow, Step, OSLCServer, Rule
-from models.ewetasker import EWETasker
-from models.trsclient import TRSClient
-from models.events import EventQueue
-from models.actions import ActionQueue
-from create_workflow import generate_rules, generate_oslc_servers
+from models import Workflow, Step, OSLCServer, Rule
+from submodules import EWETasker, TRSClient, EventQueue, ActionQueue, OSLCInterface
+from utils import generate_rules, generate_oslc_servers
 from visuals import visualize
 import time
 import yaml
@@ -88,6 +85,9 @@ if __name__ == "__main__":
             # When EWE Tasker returns an action, execute it
             for action in action_queue.actions:
                 action_queue.actions.remove(action)
-                action.set_credentials(step)
-                action.execute()
+
+                oslc_interface = OSLCInterface()
+                oslc_interface.set_credentials(step, action)
+                oslc_interface.execute(action)
+                
                 input()
