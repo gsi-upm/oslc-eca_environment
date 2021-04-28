@@ -38,7 +38,7 @@ def generate_rules(step, rules):
     for file in rules:
         rule = Rule(step.user)
 
-        with open('rules/'+file) as reader:
+        with open('example/rules/'+file) as reader:
             rule.set_value(reader.read())
 
         print('\nNew rule:\n')

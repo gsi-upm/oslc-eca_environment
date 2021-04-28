@@ -1,7 +1,6 @@
 from models import Workflow, Step, OSLCServer, Rule
 from submodules import EWETasker, TRSClient, EventQueue, ActionQueue, OSLCInterface
-from utils import generate_rules, generate_oslc_servers
-from visuals import visualize
+from utils import generate_rules, generate_oslc_servers, visualize
 import time
 import yaml
 
