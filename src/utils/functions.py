@@ -1,7 +1,9 @@
 from models.roi import Workflow, Step, OSLCServer, Rule
 from tkinter import filedialog
 from rdflib import Graph
+import logging
 
+log = logging.getLogger('tester.sub')
 
 def generate_oslc_servers(step, inputs, outputs):
     for i in inputs:
@@ -13,7 +15,7 @@ def generate_oslc_servers(step, inputs, outputs):
             password = i['password']
         )
 
-        print('\nConnecting to {} OSLC server:\n'.format(oslc_server.name))
+        log.warning('\nConnecting to {} OSLC server:\n'.format(oslc_server.name))
         oslc_server.display()
         step.add_input(oslc_server)
         # input()
@@ -28,7 +30,7 @@ def generate_oslc_servers(step, inputs, outputs):
             password = o['password']
         )
 
-        print('\nConnecting to {} OSLC server:\n'.format(oslc_server.name))
+        log.warning('\nConnecting to {} OSLC server:\n'.format(oslc_server.name))
         oslc_server.display()
         step.add_output(oslc_server)
         # input()
@@ -41,9 +43,9 @@ def generate_rules(step, rules):
         with open('example/rules/'+file) as reader:
             rule.set_value(reader.read())
 
-        print('\nNew rule:\n')
+        log.warning('\nNew rule:\n')
         g = Graph()
         g.parse(data=rule.value, format='n3')
-        print(g.serialize(format='n3').decode('utf-8'))
+        log.warning(g.serialize(format='n3').decode('utf-8'))
         step.add_rule(rule)
         # input()

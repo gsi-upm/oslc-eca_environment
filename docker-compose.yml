@@ -6,3 +6,4 @@ services:
     build: .
     volumes:
       - ./example:/example
+    network_mode: "host"

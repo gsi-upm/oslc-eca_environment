@@ -3,6 +3,9 @@ from submodules import EWETasker, TRSClient, EventQueue, ActionQueue, OSLCInterf
 from utils import generate_rules, generate_oslc_servers, visualize
 import time
 import yaml
+import logging
+
+log = logging.getLogger('tester.sub')
 
 if __name__ == "__main__":
 
@@ -11,15 +14,15 @@ if __name__ == "__main__":
     with open(configfile, 'r') as stream:
         config = yaml.safe_load(stream)
 
-    ewe_tasker = EWETasker('http://0.0.0.0:5050')
+    ewe_tasker = EWETasker('http://localhost:5050')
 
     # Create a Workflow
-    print('\nCreating workflow {}'.format(config['name']))
+    log.warning('\nCreating workflow {}'.format(config['name']))
     workflow = Workflow(config['name'])
 
     # Create N Steps
     n = len(config['steps'])
-    print('\nCreating {} steps'.format(n))
+    log.warning('\nCreating {} steps'.format(n))
     workflow.create_steps(int(n))
 
     for step in workflow.steps:
@@ -27,7 +30,7 @@ if __name__ == "__main__":
         generate_oslc_servers(step, config['steps'][step.order-1]['input'], config['steps'][step.order-1]['output'])
 
         # Import Rules
-        print('\nImporting rules')
+        log.warning('\nImporting rules')
         generate_rules(step, config['steps'][step.order-1]['rules'])
 
         # Send Rules to EWE Tasker
@@ -42,7 +45,7 @@ if __name__ == "__main__":
             trs_client.incremental_update()
             step.clients.append(trs_client)
 
-        print('\nStep {}:\n'.format(step.order))
+        log.warning('\nStep {}:\n'.format(step.order))
         step.display()
         # input()
 
@@ -54,7 +57,7 @@ if __name__ == "__main__":
         # Run each step in order
         for step in workflow.steps:
 
-            print("\nListening for events\n")
+            log.warning("\nListening for events\n")
             while not action_queue.actions:
 
                 # Listen to every input OSLC Server for events
@@ -70,15 +73,15 @@ if __name__ == "__main__":
                     event_queue.events.remove(event)
                     event.add_channel(client.channel)
 
-                    print('\nEvent triggered:\n')
-                    print(event.get_rdf())
+                    log.warning('\nEvent triggered:\n')
+                    log.warning(event.get_rdf())
                     # input()
 
                     actions = ewe_tasker.evaluate(event.get_rdf(), step.user.username)
                     action_queue.add(actions)
                     
-                    print('\nActions executed:\n')
-                    print(actions.decode('utf-8'))
+                    log.warning('\nActions executed:\n')
+                    log.warning(actions.decode('utf-8'))
 
                 time.sleep(5)
 
