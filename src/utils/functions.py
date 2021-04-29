@@ -16,7 +16,7 @@ def generate_oslc_servers(step, inputs, outputs):
         print('\nConnecting to {} OSLC server:\n'.format(oslc_server.name))
         oslc_server.display()
         step.add_input(oslc_server)
-        input()
+        # input()
 
 
     for o in outputs:
@@ -31,7 +31,7 @@ def generate_oslc_servers(step, inputs, outputs):
         print('\nConnecting to {} OSLC server:\n'.format(oslc_server.name))
         oslc_server.display()
         step.add_output(oslc_server)
-        input()
+        # input()
 
 
 def generate_rules(step, rules):
@@ -46,4 +46,4 @@ def generate_rules(step, rules):
         g.parse(data=rule.value, format='n3')
         print(g.serialize(format='n3').decode('utf-8'))
         step.add_rule(rule)
-        input()
+        # input()

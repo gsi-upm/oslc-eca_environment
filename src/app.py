@@ -6,11 +6,12 @@ import yaml
 
 if __name__ == "__main__":
 
-    configfile = input('\nConfig file:')
+    # configfile = input('\nConfig file:')
+    configfile = '/example/config1.yaml'
     with open(configfile, 'r') as stream:
         config = yaml.safe_load(stream)
 
-    ewe_tasker = EWETasker('http://localhost:5050')
+    ewe_tasker = EWETasker('http://0.0.0.0:5050')
 
     # Create a Workflow
     print('\nCreating workflow {}'.format(config['name']))
@@ -43,7 +44,7 @@ if __name__ == "__main__":
 
         print('\nStep {}:\n'.format(step.order))
         step.display()
-        input()
+        # input()
 
     event_queue = EventQueue()
     action_queue = ActionQueue()
@@ -71,7 +72,7 @@ if __name__ == "__main__":
 
                     print('\nEvent triggered:\n')
                     print(event.get_rdf())
-                    input()
+                    # input()
 
                     actions = ewe_tasker.evaluate(event.get_rdf(), step.user.username)
                     action_queue.add(actions)
@@ -89,4 +90,4 @@ if __name__ == "__main__":
                 oslc_interface.set_credentials(step, action)
                 oslc_interface.execute(action)
                 
-                input()
+                # input()
