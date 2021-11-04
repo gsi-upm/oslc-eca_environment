@@ -1,0 +1,6 @@
+[submodule "bugzilla-oslc_adapter"]
+	path = bugzilla-oslc_adapter
+	url = ssh://git@lab.gsi.upm.es:2200/smartdevops/oslc-bugzilla-github-integration-demo/bugzilla-oslc_adapter.git
+[submodule "github-oslc_adapter"]
+	path = github-oslc_adapter
+	url = ssh://git@lab.gsi.upm.es:2200/smartdevops/oslc-bugzilla-github-integration-demo/github-oslc_adapter.git

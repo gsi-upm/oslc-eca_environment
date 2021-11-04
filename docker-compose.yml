@@ -1,8 +1,7 @@
 version: '3'
 
 services:
-  roi:
-    # image: oslcapi
+  oslc-ewe_gateway:
     build: .
     volumes:
       - ./example:/example
