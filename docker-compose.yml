@@ -9,10 +9,45 @@ services:
   
   fuseki:
     image: stain/jena-fuseki
-    container_name: fusekiroi
+    container_name: fuseki_gateway
     ports:
-      - "3030:3030"
+      - "3031:3030"
     volumes:
     - ./fuseki:/fuseki
     environment:
       - ADMIN_PASSWORD=fusekiadmin
+
+  github_adapter:
+    image: oslcapi
+    build:
+      context: ./github-oslc_adapter
+    command: flask run -h 0.0.0.0
+    env_file:
+      - ./github-oslc_adapter/.flaskenv
+      - ./github-oslc_adapter/.env
+    environment:
+      - DATABASE_URI=sqlite:////db/oslcapi.db
+    volumes:
+      - ./github-oslc_adapter/oslcapi:/code/oslcapi
+      - ./github-oslc_adapter/db/:/db/
+    ports:
+      - "5001:5000"
+
+  bugzilla_adapter:
+    image: oslcapi
+    build:
+      context: ./bugzilla-oslc_adapter
+    ports:
+      - "5000:5000"
+    command: flask run -h 0.0.0.0
+    env_file:
+      - ./bugzilla-oslc_adapter/.flaskenv
+      - ./bugzilla-oslc_adapter/.env
+    environment:
+      - DATABASE_URI=sqlite:////db/oslcapi.db
+      - BUGZILLA_URL=$BUGZILLA_URL
+      - BUGZILLA_API_KEY=$BUGZILLA_API_KEY
+    volumes:
+      - ./bugzilla-oslc_adapter/oslcapi:/code/oslcapi
+      - ./bugzilla-oslc_adapter/db/:/db/
+    network_mode: host
