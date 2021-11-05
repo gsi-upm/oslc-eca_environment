@@ -1,5 +1,5 @@
 cd lyo-samples/trs4j-bugzilla-sample
-mvn clean jetty:run &
+mvn clean jetty:run
 cd ../..
 
 docker-compose up -d
