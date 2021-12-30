@@ -1,12 +1,12 @@
 [submodule "bugzilla-oslc_adapter"]
 	path = bugzilla-oslc_adapter
-	url = ssh://git@lab.gsi.upm.es:2200/smartdevops/oslc-bugzilla-github-integration-demo/bugzilla-oslc_adapter.git
+	url = https://lab.gsi.upm.es/smartdevops/oslc-bugzilla-github-integration-demo/bugzilla-oslc_adapter.git
 [submodule "github-oslc_adapter"]
 	path = github-oslc_adapter
-	url = ssh://git@lab.gsi.upm.es:2200/smartdevops/oslc-bugzilla-github-integration-demo/github-oslc_adapter.git
+	url = https://lab.gsi.upm.es/smartdevops/oslc-bugzilla-github-integration-demo/github-oslc_adapter.git
 [submodule "ewetasker_server"]
 	path = ewetasker_server
-	url = ssh://git@lab.gsi.upm.es:2200/ewe/ewetasker_server.git
+	url = https://lab.gsi.upm.es/ewe/ewetasker_server.git
 [submodule "lyo-samples"]
 	path = lyo-samples
 	url = https://github.com/OSLC/lyo-samples.git
