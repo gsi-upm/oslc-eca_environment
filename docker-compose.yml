@@ -1,26 +1,11 @@
 version: '3'
 
 services:
-  oslc-ewe_gateway:
-    build: .
-    volumes:
-      - ./example:/example
-    network_mode: "host"
-  
-  fuseki:
-    image: stain/jena-fuseki
-    container_name: fuseki_gateway
-    ports:
-      - "3031:3030"
-    volumes:
-    - ./fuseki:/fuseki
-    environment:
-      - ADMIN_PASSWORD=fusekiadmin
-
   github_adapter:
     image: oslcapi
     build:
       context: ./github-oslc_adapter
+    container_name: github-adapter
     command: flask run -h 0.0.0.0
     env_file:
       - ./github-oslc_adapter/.flaskenv
@@ -37,6 +22,7 @@ services:
     image: oslcapi
     build:
       context: ./bugzilla-oslc_adapter
+    container_name: bugzilla-adapter
     ports:
       - "5000:5000"
     command: flask run -h 0.0.0.0
@@ -50,4 +36,22 @@ services:
     volumes:
       - ./bugzilla-oslc_adapter/oslcapi:/code/oslcapi
       - ./bugzilla-oslc_adapter/db/:/db/
-    network_mode: host
+
+  bugzilla:
+    image: bugzilla/bugzilla-dev
+    container_name: bugzilla
+    ports:
+      - 80:80
+      - 5900:5900
+    
+  bugzilla-trs:
+    image: maven:3.3-jdk-8
+    container_name: bugzilla-trs
+    command: mvn clean jetty:run
+    volumes:
+      - ./bugzilla-trs:/usr/src/mymaven
+    working_dir: /usr/src/mymaven
+    ports:
+      - 8085:8085
+    depends_on:
+      - bugzilla
