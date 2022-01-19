@@ -17,7 +17,7 @@ git clone https://github.com/OSLC/lyo-samples.git
 cd lyo-samples/trs4j-bugzilla-sample
 ```
 
-Edit the *src/main/resources/bugz.properties* file, enter the credentials you chose for your specific Bugzilla instance in the *admin* and *admin_password* properties. Run the OSLC-TRS server (you need to have [Java](https://java.com/en/download/help/download_options.html) and [Maven](http://maven.apache.org/install.html) installed):
+Edit the *src/main/resources/bugz.properties* file, enter the credentials you chose for your specific Bugzilla instance in the *admin* and *admin_password* properties. Run the OSLC-TRS server (you need to have [Java](https://java.com/en/download/help/download_options.html)(OpenJDK 8) and [Maven](http://maven.apache.org/install.html) installed):
 
 ```bash
 mvn clean jetty:run
