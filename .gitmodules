@@ -7,9 +7,6 @@
 [submodule "ewetasker_server"]
 	path = ewetasker_server
 	url = https://lab.gsi.upm.es/ewe/ewetasker_server.git
-[submodule "lyo-samples"]
-	path = lyo-samples
-	url = https://github.com/OSLC/lyo-samples.git
 [submodule "oslc-automation_interface"]
 	path = oslc-automation_interface
 	url = https://lab.gsi.upm.es/smartdevops/oslc-bugzilla-github-integration-demo/oslc-automation_interface.git
